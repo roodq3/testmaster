@@ -1,0 +1,8 @@
+{
+  "name": "testmaster",
+  "version": "1.0.1",
+  "description": "PRD-driven unit testing with structured changelog and CLG-tagged commits",
+  "author": {
+    "name": "roodq3"
+  }
+}

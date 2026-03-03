@@ -1,0 +1,11 @@
+{
+  "name": "testmaster",
+  "version": "1.0.1",
+  "description": "PRD-driven unit testing with structured changelog and CLG-tagged commits",
+  "author": "roodq3",
+  "homepage": "https://github.com/roodq3/testmaster",
+  "skills": [
+    "skills/unit-test/SKILL.md",
+    "skills/prd-keeper/SKILL.md"
+  ]
+}
