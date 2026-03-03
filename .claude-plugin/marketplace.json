@@ -1,0 +1,18 @@
+{
+  "name": "testmaster",
+  "description": "Automated test generation plugin for Claude Code",
+  "owner": {
+    "name": "roodq3"
+  },
+  "plugins": [
+    {
+      "name": "testmaster",
+      "description": "Automated unit test and E2E test generation for any project",
+      "version": "1.0.0",
+      "source": "./",
+      "author": {
+        "name": "roodq3"
+      }
+    }
+  ]
+}

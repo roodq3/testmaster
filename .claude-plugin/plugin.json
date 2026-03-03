@@ -1,0 +1,8 @@
+{
+  "name": "testmaster",
+  "version": "1.0.0",
+  "description": "Automated unit test and E2E test generation for any project",
+  "author": {
+    "name": "roodq3"
+  }
+}

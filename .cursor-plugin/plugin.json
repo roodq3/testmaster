@@ -1,0 +1,11 @@
+{
+  "name": "testmaster",
+  "version": "1.0.0",
+  "description": "Automated unit test and E2E test generation for any project",
+  "author": "roodq3",
+  "homepage": "https://github.com/roodq3/testmaster",
+  "skills": [
+    "skills/unit_test/SKILL.md",
+    "skills/e2e_test/SKILL.md"
+  ]
+}
