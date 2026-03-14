@@ -2,42 +2,26 @@
 
 # TestMaster
 
-A Claude Code plugin that automatically generates, runs, and fixes tests for your project.
+A Claude Code plugin for PRD-driven testing. Tests are designed from requirements, reviewed before implementation, then dispatched to subagents.
 
 ## Features
 
-- **Auto-detect tech stack** — Scans your project and picks the right test framework automatically
-- **Write tests that pass** — Generates tests, runs them, and enters a fix loop (max 5 rounds) until they pass
-- **Incremental by default** — Only writes tests for new/uncovered code, never duplicates existing tests
-- **Full regression check** — Runs the entire test suite every time, catching breakages from new code
-- **Coverage enforcement** — Checks line (≥ 80%) and branch (≥ 70%) coverage, adds tests if below threshold
-- **Smart mock boundaries** — Auto-mocks side-channel dependencies, asks you to decide on the rest
-- **Interruption recovery** — Saves progress to plan files on disk; pick up where you left off after any interruption
-- **Framework-agnostic** — Works with any language/framework; built-in reference files for popular stacks provide extra quality
-- **E2E flow supplement** — Run `/testmaster:e2e_test <flow description>` to add specific missing flows without re-scanning
+- **PRD-driven** — Test cases are derived from product requirements, not guessed from code
+- **Design before code** — Test cases are designed and reviewed before any test code is written
+- **Review gates** — Impact analysis review and test case review catch problems before implementation
+- **Subagent dispatch** — Each module gets its own subagent with clean context, avoiding context pollution
+- **Smart mock boundaries** — Identifies external dependencies, auto-mocks side-channel deps, asks you about the rest
+- **Two failure modes** — Test code bugs get fixed; business code bugs get recorded, never modified
+- **Incremental updates** — On subsequent runs, only affected modules are re-analyzed and re-tested
+- **Interruption recovery** — Progress saved to plan files and testcase docs; pick up where you left off
+- **Framework-agnostic** — Works with any language/framework
 
 ## Skills
 
 | Command | What it does |
 |---------|-------------|
-| `/testmaster:unit_test` | Generates unit tests file by file with coverage enforcement |
-| `/testmaster:e2e_test` | Identifies user flows and writes end-to-end tests with Page Object Model |
-| `/testmaster:e2e_test <description>` | Appends a specific flow to existing E2E tests |
-
-## Built-in Reference Files
-
-Best practices and common pitfalls for:
-
-| Unit Test | E2E Test |
-|-----------|----------|
-| Spring Boot (JUnit5 + Mockito) | Playwright |
-| Vue (Vitest + Vue Test Utils) | Cypress |
-| React (Vitest/Jest + Testing Library) | Spring Boot Integration |
-| TypeScript (Vitest) | Python (FastAPI / Django / Flask) |
-| Python (pytest) | |
-| Vanilla H5 (Vitest + jsdom) | |
-
-No reference file for your stack? **TestMaster still works.** Reference files are optional enhancements — they help Claude avoid framework-specific pitfalls. PRs welcome to add more.
+| `/testmaster:unit-test` | PRD-driven unit testing with review gates, subagent dispatch per module |
+| `/testmaster:prd-keeper` | Keeps PRD and code in sync after every change (auto-triggered, no manual invocation needed) |
 
 ## Install
 
@@ -113,63 +97,81 @@ ln -s ~/.config/opencode/testmaster/skills ~/.config/opencode/skills/testmaster
 
 ## How It Works
 
+### Prerequisites
+
+- `docs/prd.md` must exist in your project (`prd-keeper` auto-creates and maintains it during development)
+
+### PRD Keeper Flow
+
+Every code change triggers a sync cycle:
+
+1. Classify the change scope (Tweak / Modify / Add / Remove / Rethink)
+2. Update `docs/prd.md` in place and bump the version
+3. Append a changelog entry to `docs/prd-changelog.md` with a sequential ID (`CLG-001`, `CLG-002`, ...)
+4. Run `git diff --name-only` to fill the changelog's **Impact on existing code** field with actual changed files
+5. Commit code + PRD + changelog together, with a `CLG: <number>` trailer in the commit message
+
+#### Structured Changelog
+
+Each entry in `docs/prd-changelog.md` has a unique `CLG-XXX` ID and records:
+
+- **What changed** — one or two sentences
+- **Why** — the reason behind the change
+- **Impact on existing code** — affected files (from `git diff`, not guessed)
+- **Migration notes** — DB migrations, data format changes, etc.
+
+#### CLG-Tagged Commits
+
+Commits made by prd-keeper include a `CLG: <number>` trailer linking back to the changelog entry:
+
+```
+feat(auth): add OAuth2 login flow
+
+CLG: 003
+```
+
+This enables traceability — `git log --grep="CLG: 003"` finds all commits related to a specific changelog entry.
+
 ### Unit Test Flow
 
 ```
-Detect stack → Check infrastructure → Scan & plan → Write per file → Run per file → Fix loop
-                                                                              ↓
-                                                              Full suite run → Coverage check → Summary
+Read PRD + changelog → Impact analysis → Impact review (gate)
+        ↓
+Framework setup (if needed)
+        ↓
+Test plan + case design (per module) → Test case review (gate)
+        ↓
+Write plan file → Dispatch implementer subagents (per module)
+        ↓
+Full suite run → Coverage check → Summary
 ```
 
-1. Detects your tech stack, reads matching reference files (if available)
-2. Verifies test framework is installed, installs if missing
-3. Scans all source files, skips those with existing tests, generates a plan file
-4. For each file: writes tests → runs only that file's tests → fix loop (max 5 rounds)
-5. Runs the full test suite, checks coverage, prints summary to terminal
+1. Reads PRD and changelog to understand requirements and recent changes
+2. Scans codebase, maps modules and dependencies, produces affected module list
+3. Impact reviewer subagent validates the affected list (first run: skipped, all modules are new)
+4. Sets up test framework if not already present
+5. Dispatches designer subagent per module to create testcase docs (`docs/testcase/`)
+6. Testcase reviewer subagent validates coverage and mock strategy
+7. Dispatches implementer subagent per module — writes tests, runs them, fix loop (max 5 rounds)
+8. Runs full test suite, checks coverage, outputs summary
 
-### E2E Test Flow
+### Source Code Boundary
 
-```
-Detect stack → Identify flows → Assess mock boundaries → Configure env → Write per flow → Fix loop
-                                         ↓                                        ↓
-                                  Ask user to confirm                  Full suite run → Report
-```
+When a test fails, TestMaster follows strict rules:
 
-1. Detects tech stack and E2E framework (installs Playwright if none found)
-2. Identifies user flows by priority (P0 auth/core → P1 CRUD/search → P2 edge cases)
-3. Lists all external dependencies — auto-mocks side-channel deps, asks you about the rest
-4. For real dependencies: shows detected config, asks you to confirm it's correct
-5. Writes tests per flow using Page Object Model, reuses existing Page Objects
-6. Runs full suite, generates a Markdown report
+- **Test code bug** (wrong mock, bad assertion) → fixes the test
+- **Business code bug** (actual defect) → records the finding, never modifies business code
+- **Can't determine** → treats as business code bug, marks for review
 
 ### Interruption Recovery
 
-All progress is saved to `docs/plans/YYYY-MM-DD-HHmmss-*.md`. If your session is interrupted:
+All progress is saved to `docs/plans/YYYY-MM-DD-HHmmss-unit-test.md` and `docs/testcase/`. If your session is interrupted:
 
-- TestMaster finds the latest plan file
-- Locates the first uncompleted task
+- TestMaster finds the latest plan file and testcase docs
+- Locates the first uncompleted module
 - Continues from there
 
-### Source Code Fixes
-
-When a test fails, TestMaster follows these rules:
-
-- **Test bug** → fixes the test
-- **Obvious source bug** (null not handled, index out of bounds) → fixes the source and logs it in the plan
-- **Design issue or unclear** → does not modify source, marks it for your review
-
 ## Contributing
-
-### Add a reference file
-
-Create a file in `skills/unit_test/references/` or `skills/e2e_test/references/`:
-
-- Only include what Claude tends to get wrong — pitfalls, mock strategies, conventions
-- Don't include code examples, install commands, or config templates
-- Keep it under 40 lines
-- See existing files for the format
-
-### Report issues
 
 Open an issue with: framework name, source file, and what went wrong.
 
