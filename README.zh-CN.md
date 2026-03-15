@@ -150,7 +150,7 @@ CLG: 003
 2. 扫描代码库，映射模块和依赖关系，生成受影响模块列表
 3. 影响审查子代理验证受影响列表（首次运行跳过，所有模块都是新的）
 4. 如果尚未搭建测试框架，自动搭建
-5. 按模块调度设计子代理，创建测试用例文档（`docs/testcase/`）
+5. 按模块调度设计子代理，创建测试用例文档（`docs/testmaster/testcase/`）
 6. 用例审查子代理验证覆盖度和 Mock 策略
 7. 按模块调度实现子代理——编写测试、运行、修复循环（最多 5 轮）
 8. 运行完整测试套件，检查覆盖率，输出总结
@@ -165,7 +165,7 @@ CLG: 003
 
 ### 中断恢复
 
-所有进度保存到 `docs/plans/YYYY-MM-DD-HHmmss-unit-test.md` 和 `docs/testcase/`。Session 中断后：
+所有进度保存到 `docs/testmaster/plans/YYYY-MM-DD-HHmmss-unit-test.md` 和 `docs/testmaster/testcase/`。Session 中断后：
 
 - TestMaster 找到最新的计划文件和测试用例文档
 - 定位第一个未完成的模块

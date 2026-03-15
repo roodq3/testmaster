@@ -8,7 +8,7 @@
     {
       "name": "testmaster",
       "description": "Automated unit test and E2E test generation for any project",
-      "version": "1.0.0",
+      "version": "1.0.2",
       "source": "./",
       "author": {
         "name": "roodq3"

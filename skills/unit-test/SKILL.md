@@ -95,8 +95,8 @@ Design first, code second — review gates prevent wasted effort
 2. Scan business code directories — map modules, dependencies, complexity
    - **Module granularity**: follow the project's natural boundaries (a service class, a file, a package). One module = one testcase doc. If unsure, match the unit the project already organizes around (e.g., one file per class → one module per class)
 3. If existing tests found: read 2–3 test files, learn conventions (naming, directory, assertions, mocking)
-4. If `docs/testcase/` does not exist (first run): all modules are new, skip to Step 2
-5. **Impact analysis** (when `docs/testcase/` exists):
+4. If `docs/testmaster/testcase/` does not exist (first run): all modules are new, skip to Step 2
+5. **Impact analysis** (when `docs/testmaster/testcase/` exists):
    - From changelog: identify what requirements changed → what business code was modified
    - From code: analyze which modules depend on the modified code (callers, importers, inheritors)
    - Produce affected module list with dependency evidence
@@ -138,7 +138,7 @@ If project already has test infrastructure, **skip this step**.
    - Validates: coverage completeness, mock strategy, missing edge cases
    - For affected modules: also validates TC add/update/delete decisions
    - If rejected: lead re-dispatches designer with reviewer feedback (max 2 rounds)
-4. Write plan file to `docs/plans/YYYY-MM-DD-HHmmss-unit-test.md`:
+4. Write plan file to `docs/testmaster/plans/YYYY-MM-DD-HHmmss-unit-test.md`:
 
 ```markdown
 ## Context
@@ -151,8 +151,8 @@ If project already has test infrastructure, **skip this step**.
 [Step 3 mock strategy]
 
 ## Modules
-- [ ] module-a → docs/testcase/module-a.md (new)
-- [ ] module-b → docs/testcase/module-b.md (affected — [reason])
+- [ ] module-a → docs/testmaster/testcase/module-a.md (new)
+- [ ] module-b → docs/testmaster/testcase/module-b.md (affected — [reason])
 
 ## Skipped (unaffected)
 - module-c
@@ -171,7 +171,7 @@ For each module in the plan:
      - Business code bug (actual defect) → don't touch, mark as failure, record in report
      - Can't determine → treat as business code bug
    - Reports: files created, test count, pass/fail, business code bugs found
-3. **Write results back** to `docs/testcase/[module-name].md` — update `Status` and `Last run`:
+3. **Write results back** to `docs/testmaster/testcase/[module-name].md` — update `Status` and `Last run`:
    - `✅ PASSED` / `❌ FAILED — [reason]` (add `Actual` field) / `🔍 NEEDS_REVIEW`
    - See `references/testcase-format.md` for all status values
 4. Update plan checklist after each subagent completes
@@ -193,7 +193,7 @@ For each module in the plan:
 
 ## Resume
 
-Read latest `docs/plans/*-unit-test.md` + scan `docs/testcase/`.
+Read latest `docs/testmaster/plans/*-unit-test.md` + scan `docs/testmaster/testcase/`.
 
 - **No plan or testcase docs**: start from Step 1
 - **Plan + testcase docs exist**: skip to Step 4, resume from first incomplete module

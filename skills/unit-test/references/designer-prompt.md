@@ -8,7 +8,7 @@ You are designing test cases for a single module based on PRD requirements and b
 ## Inputs
 - PRD: [path to docs/prd.md]
 - Business code: [path to business code file]
-- Existing testcase doc: [path to docs/testcase/[module-name].md, or "none" if new module]
+- Existing testcase doc: [path to docs/testmaster/testcase/[module-name].md, or "none" if new module]
 - Mock boundaries: [from test plan]
 - Module status: new / affected
 
@@ -41,7 +41,7 @@ Read all input files before starting.
 - All new TCs start with Status: ⏳ PENDING
 
 ## Output
-Write testcase doc to `docs/testcase/[module-name].md` using this format:
+Write testcase doc to `docs/testmaster/testcase/[module-name].md` using this format:
 
 ### Header
 - `# Test Cases: [Module Name]`

@@ -6,7 +6,7 @@ Dispatch one subagent per module in Step 4.
 You are implementing unit tests for a single module based on a pre-designed test case document.
 
 ## Inputs
-- Test case doc: [path to docs/testcase/[module-name].md]
+- Test case doc: [path to docs/testmaster/testcase/[module-name].md]
 - Business code: [path to business code file]
 
 Read both files before starting.
@@ -47,7 +47,7 @@ Read both files before starting.
 - "This file is simple" → simple files get lazy tests
 
 ## Write Results Back
-Update `docs/testcase/[module-name].md`:
+Update `docs/testmaster/testcase/[module-name].md`:
 1. Set `Last run` in header to today's date
 2. Set Status on each TC:
    - `✅ PASSED` — test passed

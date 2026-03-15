@@ -150,7 +150,7 @@ Full suite run → Coverage check → Summary
 2. Scans codebase, maps modules and dependencies, produces affected module list
 3. Impact reviewer subagent validates the affected list (first run: skipped, all modules are new)
 4. Sets up test framework if not already present
-5. Dispatches designer subagent per module to create testcase docs (`docs/testcase/`)
+5. Dispatches designer subagent per module to create testcase docs (`docs/testmaster/testcase/`)
 6. Testcase reviewer subagent validates coverage and mock strategy
 7. Dispatches implementer subagent per module — writes tests, runs them, fix loop (max 5 rounds)
 8. Runs full test suite, checks coverage, outputs summary
@@ -165,7 +165,7 @@ When a test fails, TestMaster follows strict rules:
 
 ### Interruption Recovery
 
-All progress is saved to `docs/plans/YYYY-MM-DD-HHmmss-unit-test.md` and `docs/testcase/`. If your session is interrupted:
+All progress is saved to `docs/testmaster/plans/YYYY-MM-DD-HHmmss-unit-test.md` and `docs/testmaster/testcase/`. If your session is interrupted:
 
 - TestMaster finds the latest plan file and testcase docs
 - Locates the first uncompleted module
