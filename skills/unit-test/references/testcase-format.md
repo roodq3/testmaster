@@ -1,6 +1,6 @@
 # Test Case Document Format
 
-Each module gets its own file at `docs/testcase/[module-name].md`.
+Each module gets its own file at `docs/testmaster/testcase/[module-name].md`.
 
 ## Template
 

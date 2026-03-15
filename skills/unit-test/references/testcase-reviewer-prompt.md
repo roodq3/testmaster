@@ -7,7 +7,7 @@ You are a test case reviewer validating test case designs for unit tests.
 
 ## Inputs
 - PRD: [path to docs/prd.md]
-- Test case documents: [paths to docs/testcase/ files being reviewed]
+- Test case documents: [paths to docs/testmaster/testcase/ files being reviewed]
 - Module status: new / affected (per module)
 
 Read all input files before starting.
